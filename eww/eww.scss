@@ -1,0 +1,151 @@
+$bg0: #282828;
+$bg0-hard: #1d2021;
+$bg0-soft: #32302f;
+$bg1: #3c3836;
+$bg2: #504945;
+$bg3: #665c54;
+$bg4: #7c6f64;
+
+$fg0: #fbf1c7;
+$fg1: #ebdbb2;
+$fg2: #d5c4a1;
+$fg3: #bdae93;
+$fg4: #a89984;
+
+$dark-red: #cc241d;
+$dark-green: #98971a;
+$dark-yellow: #d79921;
+$dark-blue: #458588;
+$dark-purple: #b16286;
+$dark-aqua: #689d6a;
+$dark-orange: #d65d0e;
+$dark-gray: #928374;
+
+$light-red: #fb4934;
+$light-green: #b8bb26;
+$light-yellow: #fabd2f;
+$light-blue: #83a598;
+$light-purple: #d3869b;
+$light-aqua: #8ec07c;
+$light-orange: #f38019;
+$light-gray: #a89984;
+
+$stats-text: $light-aqua;
+$metrics-text: $dark-yellow;
+$vol-text: $dark-purple;
+
+scale {
+    min-width: 200px;
+}
+
+.bar {
+    background: $bg0
+}
+
+label.core {
+    font-family: "Iosevka Nerd Font";
+    font-size: 36px;
+    color: $metrics-text;
+    //color: $bg4
+}
+
+.corelow {
+    color: $light-yellow;
+}
+
+.corehigh {
+    color: $dark-orange;
+}
+
+.ram {
+    font-family: "Iosevka Nerd Font";
+    font-size: 46px;
+    //color: $bg4;
+    color: $metrics-text;
+}
+
+label.ram {
+    font-family: "Iosevka Nerd Font";
+    font-size: 36px;
+    color: $metrics-text;
+    //color: $bg4;
+}
+
+.volume {
+    font-family: "Iosevka Nerd Font";
+    font-size: 24px;
+    color: $vol-text;
+}
+
+label.volume {
+    font-family: "Iosevka Nerd Font";
+    font-size: 26px;
+    color: $vol-text;
+}
+
+.time {
+    font-family: "Iosevka Nerd Font";
+    font-weight: bold;
+    font-size: 36px;
+    color: $fg0;
+}
+
+.date {
+    font-family: "Iosevka Nerd Font";
+    font-weight: bold;
+    font-size: 24px;
+    color: $fg0;
+}
+
+.batteryicon {
+    font-family: "Iosevka Nerd Font";
+    font-size: 36px;
+    color: $stats-text;
+}
+
+.batteryiconsmall {
+    font-family: "Iosevka Nerd Font";
+    font-size: 26px;
+    color: $stats-text;
+}
+
+.batterytext {
+    font-family: "Iosevka Nerd Font";
+    //font-weight: bold;
+    font-size: 24px;
+    color: $stats-text;
+}
+
+.batteryprogress trough {
+    border: none;
+    min-width: 10px;
+    min-height: 16px;
+    background-color: $bg0;
+}
+
+.batteryprogress trough progress {
+    border: none;
+    min-height: 18px;
+    background-color: $stats-text;
+}
+
+.wifi {
+    font-family: "Iosevka Nerd Font";
+    font-size: 30px;
+    color: $stats-text;
+}
+
+.metrics {
+    background-color: $bg1;
+    border-radius: 20px;
+}
+
+.stats {
+    background-color: $bg1;
+    border-radius: 20px;
+}
+
+.vol {
+    background-color: $bg1;
+    border-radius: 20px;
+}

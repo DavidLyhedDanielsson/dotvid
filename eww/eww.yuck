@@ -1,0 +1,255 @@
+(defvar volume_percent 0)
+(defvar wifistatus "{\"status\": \"disconnected\", \"name\": \"\"}")
+
+(defpoll time :interval "10s"
+  "date '+%_H:%M'"
+)
+(defpoll date :interval "60s"
+  "date '+%d %m %y'"
+)
+
+(defpoll battery :interval "5s" :initial "[\"\", 0, \"\"]"
+  `$BATTERY_DIR/status.sh`
+)
+
+(defwidget volume []
+  (eventbox
+    ;:style "background: blue"
+    :width 80
+    :onscroll "scripts/volume/{}.sh"
+    (circular-progress
+      :value volume_percent
+      :start-at 75
+      :thickness 4
+      :clockwise true
+      :class "volume"
+      (label :text " " :class "volume")
+    )
+  )
+)
+
+(defwidget core [entry]
+  (circular-progress
+    :value {100.0 / 12.0}
+    :start-at {entry * (100.0 / 12.0)}
+    ;:thickness {(EWW_CPU.cores[entry].usage / 100.0) * (EWW_CPU.cores[entry].usage / 100) * 10}
+    :thickness {(EWW_CPU.cores[entry].usage / 100.0) * 10}
+    :class {EWW_CPU.cores[entry].usage > 80 ? "corehigh" : "corelow"}
+    :clockwise true
+  )
+)
+
+(defwidget coreusage []
+  (box
+    :width 80
+    (overlay
+      (core :entry 0)
+      (core :entry 1)
+      (core :entry 2)
+      (core :entry 3)
+      (core :entry 4)
+      (core :entry 5)
+      (core :entry 6)
+      (core :entry 7)
+      (core :entry 8)
+      (core :entry 9)
+      (core :entry 10)
+      (core :entry 11)
+      (label :text "" :class "core" :xalign 0.44)
+    )
+  )
+)
+
+(defwidget ramusage []
+  (box
+    ;:style "background: blue"
+    :width 70
+    (overlay
+      (circular-progress
+        :value {EWW_RAM.used_mem_perc}
+        :start-at 25
+        :class "ram"
+        :thickness 4
+      )
+      ;(label :text "ﳕ")
+      (label :text "ﳔ" :class "ram" :xalign 0.45)
+    )
+  )
+)
+
+(defwidget time[]
+  (overlay
+    :width 130
+    :halign "start"
+    (transform
+      :translate-y -14
+      (label
+        :class "time"
+        ;:text " ${time}"
+        :text "${time}"
+      )
+    )
+    (transform
+      :translate-y 18
+      (label
+        :class "date"
+        ;:text " ${date}"
+        :text "${date}"
+      )
+    )
+  )
+)
+
+(defvar test true)
+
+(defwidget test-box [?color]
+  (box :style "background: ${color}"
+    :orientation "h"
+    :halign "start"
+    :hexpand false
+    :space-evenly false
+  :width 50)
+)
+
+; (defwidget battery []
+  ;   (eventbox :onhover "eww update test=true" :onhoverlost "eww update test=false"
+    ;     (box
+      ;       :space-evenly false
+      ;       (revealer
+        ;         :reveal test
+        ;         :transition "slideleft"
+        ;         :duration "500ms"
+        ;         ;(test-box :color "green")
+        ;         (box
+          ;           :width 80
+          ;           (label
+            ;             :text {battery[3]}
+            ;             :class "batteryicon"
+          ;           )
+        ;         )
+      ;       )
+      ;       (revealer
+        ;         :reveal {!test}
+        ;         :transition "slideleft"
+        ;         :duration "500ms"
+        ;         ;(test-box :color "red")
+        ;         (box
+          ;           :orientation "v"
+          ;           :spacing -16
+          ;           :width 80
+          ;           (label
+            ;             :yalign 0
+            ;             :text {battery[3]}
+            ;             :class "batteryicon"
+          ;           )
+          ;           (label
+            ;             :yalign 1
+            ;             :text "02:34"
+            ;             :class "batterytext"
+          ;           )
+        ;         )
+      ;       )
+    ;     )
+  ;   )
+; )
+
+(defwidget battery []
+  (box
+    :orientation "v"
+    :space-evenly false
+    :valign "center"
+    (revealer
+      :reveal {battery[0] == "Not charging"}
+      :transition "slidedown"
+      (label
+        :text {battery[3]}
+        :class "batteryicon"
+      )
+    )
+    (revealer
+      :reveal {battery[0] != "Not charging"}
+      :transition "slideup"
+      (box
+        :orientation "v"
+        :space-evenly false
+        :spacing -10
+        (label
+          :yalign 0
+          :text {battery[3]}
+          :class "batteryiconsmall"
+        )
+        (label
+          :yalign 1
+          :text {battery[2]}
+          :class "batterytext"
+        )
+      )
+    )
+  )
+)
+
+(defwidget wifi []
+  (box
+    :width 60
+    :tooltip {wifistatus.name}
+    (label
+      :text {wifistatus.status == "connected" ? "" : "睊"}
+      :class "wifi"
+      :xalign 0.2
+    )
+  )
+)
+
+(defwindow bar
+  :monitor 0
+  :geometry (
+    geometry
+    :x "0%"
+    :y "0px"
+    :width "80%"
+    :height "55px"
+    :anchor "top center"
+  )
+  :stacking "fg"
+  :reserve (struts :distance "50px" :side "top")
+  :windowtype "dock"
+  :wm-ignore false
+  (box
+    :orientation "h"
+    (box
+      :orientation "h"
+      :halign "start"
+    )
+    (box
+      :orientation "h"
+      :halign "end"
+      ;:space-evenly false
+      :spacing 4
+      ;(box
+        ;  :orientation "h"
+        (box
+          :class "vol"
+          (volume)
+        )
+        (box
+          :space-evenly true
+          :class "metrics"
+          (coreusage)
+          (ramusage)
+        )
+        (box
+          :space-evenly true
+          :class "stats"
+          (battery)
+          (wifi)
+        )
+      ;)
+      (box
+        :halign "center"
+        (time)
+      )
+      ; Temp for polybar tray
+      ;(box :width 80)
+    )
+  )
+)
