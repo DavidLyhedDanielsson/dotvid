@@ -1,5 +1,6 @@
 (defvar volume_percent 0)
-(defvar wifistatus "{\"status\": \"disconnected\", \"name\": \"\"}")
+(defvar wifi_status "{\"connected\": \"false\", \"name\": \"\"}")
+;(defvar workspaces "[1]")
 
 (defpoll time :interval "10s"
   "date '+%_H:%M'"
@@ -8,22 +9,24 @@
   "date '+%d %m %y'"
 )
 
-(defpoll battery :interval "5s" :initial "[\"\", 0, \"\"]"
+(defpoll battery :interval "5s" :initial "[\"\", 0, \"\", \"\"]"
   `$BATTERY_DIR/status.sh`
 )
+;(defvar battery "[\"Not charging\", 0, \"\", \"\"]")
 
 (defwidget volume []
   (eventbox
-    ;:style "background: blue"
-    :width 80
+    :width 30
     :onscroll "scripts/volume/{}.sh"
-    (circular-progress
-      :value volume_percent
-      :start-at 75
-      :thickness 4
-      :clockwise true
-      :class "volume"
-      (label :text " " :class "volume")
+    (overlay
+      (label :text "" :class "volume" :halign "center")
+      (circular-progress
+        :value volume_percent
+        :start-at 75
+        :thickness 3
+        :clockwise true
+        :class "volume"
+      )
     )
   )
 )
@@ -33,7 +36,8 @@
     :value {100.0 / 12.0}
     :start-at {entry * (100.0 / 12.0)}
     ;:thickness {(EWW_CPU.cores[entry].usage / 100.0) * (EWW_CPU.cores[entry].usage / 100) * 10}
-    :thickness {(EWW_CPU.cores[entry].usage / 100.0) * 10}
+    :thickness {(EWW_CPU.cores[entry].usage / 100.0) * 8}
+    ;:thickness {entry / 12 * 8}
     :class {EWW_CPU.cores[entry].usage > 80 ? "corehigh" : "corelow"}
     :clockwise true
   )
@@ -41,8 +45,9 @@
 
 (defwidget coreusage []
   (box
-    :width 80
+    :width 25
     (overlay
+      (label :text "" :class "core" :halign "center" :valign "center")
       (core :entry 0)
       (core :entry 1)
       (core :entry 2)
@@ -55,47 +60,39 @@
       (core :entry 9)
       (core :entry 10)
       (core :entry 11)
-      (label :text "" :class "core" :xalign 0.44)
     )
   )
 )
 
 (defwidget ramusage []
   (box
-    ;:style "background: blue"
-    :width 70
+    :width 25
     (overlay
+      (label :text "ﳔ" :class "ram" :halign "center")
       (circular-progress
         :value {EWW_RAM.used_mem_perc}
         :start-at 25
         :class "ram"
-        :thickness 4
+        :thickness 3
       )
-      ;(label :text "ﳕ")
-      (label :text "ﳔ" :class "ram" :xalign 0.45)
     )
   )
 )
 
 (defwidget time[]
-  (overlay
-    :width 130
-    :halign "start"
-    (transform
-      :translate-y -14
-      (label
-        :class "time"
-        ;:text " ${time}"
-        :text "${time}"
-      )
+  (box
+    :orientation "v"
+    :space-evenly false
+    :valign "center"
+    :spacing -5
+    :style "min-width: 5em"
+    (label
+      :class "time"
+      :text "${time}"
     )
-    (transform
-      :translate-y 18
-      (label
-        :class "date"
-        ;:text " ${date}"
-        :text "${date}"
-      )
+    (label
+      :class "date"
+      :text "${date}"
     )
   )
 )
@@ -110,48 +107,6 @@
     :space-evenly false
   :width 50)
 )
-
-; (defwidget battery []
-  ;   (eventbox :onhover "eww update test=true" :onhoverlost "eww update test=false"
-    ;     (box
-      ;       :space-evenly false
-      ;       (revealer
-        ;         :reveal test
-        ;         :transition "slideleft"
-        ;         :duration "500ms"
-        ;         ;(test-box :color "green")
-        ;         (box
-          ;           :width 80
-          ;           (label
-            ;             :text {battery[3]}
-            ;             :class "batteryicon"
-          ;           )
-        ;         )
-      ;       )
-      ;       (revealer
-        ;         :reveal {!test}
-        ;         :transition "slideleft"
-        ;         :duration "500ms"
-        ;         ;(test-box :color "red")
-        ;         (box
-          ;           :orientation "v"
-          ;           :spacing -16
-          ;           :width 80
-          ;           (label
-            ;             :yalign 0
-            ;             :text {battery[3]}
-            ;             :class "batteryicon"
-          ;           )
-          ;           (label
-            ;             :yalign 1
-            ;             :text "02:34"
-            ;             :class "batterytext"
-          ;           )
-        ;         )
-      ;       )
-    ;     )
-  ;   )
-; )
 
 (defwidget battery []
   (box
@@ -172,7 +127,7 @@
       (box
         :orientation "v"
         :space-evenly false
-        :spacing -10
+        :spacing -5
         (label
           :yalign 0
           :text {battery[3]}
@@ -190,66 +145,67 @@
 
 (defwidget wifi []
   (box
-    :width 60
-    :tooltip {wifistatus.name}
+    :width 30
+    :tooltip {wifi_status.name}
     (label
-      :text {wifistatus.status == "connected" ? "" : "睊"}
+      :text {wifi_status.connected ? "直" : "睊"}
       :class "wifi"
-      :xalign 0.2
+      :halign "center"
     )
   )
 )
 
 (defwindow bar
   :monitor 0
-  :geometry (
-    geometry
+  :geometry (geometry
     :x "0%"
     :y "0px"
-    :width "80%"
-    :height "55px"
+    :width "100%"
+    :height "2%"
     :anchor "top center"
   )
+  ; Wayland
   :stacking "fg"
-  :reserve (struts :distance "50px" :side "top")
-  :windowtype "dock"
-  :wm-ignore false
+  :exclusive true
+  ; X11;
+  ;:stacking "fg"
+  ;:reserve (struts :distance "50px" :side "top")
+  ;:windowtype "dock"
+  ;:wm-ignore false
   (box
     :orientation "h"
     (box
-      :orientation "h"
-      :halign "start"
     )
     (box
       :orientation "h"
       :halign "end"
-      ;:space-evenly false
-      :spacing 4
-      ;(box
-        ;  :orientation "h"
-        (box
-          :class "vol"
-          (volume)
-        )
-        (box
-          :space-evenly true
-          :class "metrics"
-          (coreusage)
-          (ramusage)
-        )
-        (box
-          :space-evenly true
-          :class "stats"
-          (battery)
-          (wifi)
-        )
-      ;)
+      :spacing 10
+      :space-evenly false
       (box
+        :space-evenly false
+        :spacing 0
+        :class "vol"
+        (volume)
+      )
+      (box
+        :space-evenly false
+        :class "metrics"
+        :spacing 8
+        (coreusage)
+        (ramusage)
+      )
+      (box
+        :space-evenly false
+        :class "stats"
+        :spacing 8
+        (battery)
+        (wifi)
+      )
+      (box
+        :width 70
         :halign "center"
         (time)
       )
-      ; Temp for polybar tray
-      ;(box :width 80)
     )
   )
 )

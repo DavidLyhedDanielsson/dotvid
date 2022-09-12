@@ -4,10 +4,10 @@ interface=$(cat /proc/net/wireless | tail -n +3 | cut -d ':' -f1)
 
 if [ ! "$interface" ]; then
     name=""
-    status="disconnected"
+    connected="false"
 else
     name=$(iwgetid -r)
-    status="connected"
+    connected="true"
 fi
 
-echo "{\"status\": \"$status\", \"name\": \"$name\"}"
+echo "{\"connected\": $connected, \"name\": \"$name\"}"

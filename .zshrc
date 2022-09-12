@@ -118,3 +118,5 @@ alias gitl="git log"
 alias gitd="git diff"
 
 alias ll="ls -la"
+
+export PATH=$HOME/.local/bin:$PATH

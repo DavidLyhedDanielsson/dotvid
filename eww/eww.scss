@@ -34,19 +34,17 @@ $stats-text: $light-aqua;
 $metrics-text: $dark-yellow;
 $vol-text: $dark-purple;
 
-scale {
-    min-width: 200px;
-}
+$base-font-size: 1em;
 
 .bar {
-    background: $bg0
+    //background: $bg0
+    background-color: rgba(0, 0, 0, 0);
 }
 
 label.core {
     font-family: "Iosevka Nerd Font";
-    font-size: 36px;
+    font-size: $base-font-size * 1;
     color: $metrics-text;
-    //color: $bg4
 }
 
 .corelow {
@@ -58,61 +56,54 @@ label.core {
 }
 
 .ram {
-    font-family: "Iosevka Nerd Font";
-    font-size: 46px;
-    //color: $bg4;
     color: $metrics-text;
 }
 
 label.ram {
     font-family: "Iosevka Nerd Font";
-    font-size: 36px;
+    font-size: $base-font-size * 1;
     color: $metrics-text;
-    //color: $bg4;
 }
 
 .volume {
-    font-family: "Iosevka Nerd Font";
-    font-size: 24px;
     color: $vol-text;
 }
 
 label.volume {
     font-family: "Iosevka Nerd Font";
-    font-size: 26px;
+    font-size: $base-font-size * 1.2;
     color: $vol-text;
 }
 
 .time {
     font-family: "Iosevka Nerd Font";
     font-weight: bold;
-    font-size: 36px;
+    font-size: $base-font-size * 1.2;
     color: $fg0;
 }
 
 .date {
     font-family: "Iosevka Nerd Font";
     font-weight: bold;
-    font-size: 24px;
+    font-size: $base-font-size * 0.75;
     color: $fg0;
 }
 
 .batteryicon {
     font-family: "Iosevka Nerd Font";
-    font-size: 36px;
+    font-size: $base-font-size * 1.2;
     color: $stats-text;
 }
 
 .batteryiconsmall {
     font-family: "Iosevka Nerd Font";
-    font-size: 26px;
+    font-size: $base-font-size * 1.0;
     color: $stats-text;
 }
 
 .batterytext {
     font-family: "Iosevka Nerd Font";
-    //font-weight: bold;
-    font-size: 24px;
+    font-size: $base-font-size * 1.0;
     color: $stats-text;
 }
 
@@ -131,21 +122,26 @@ label.volume {
 
 .wifi {
     font-family: "Iosevka Nerd Font";
-    font-size: 30px;
+    font-size: $base-font-size * 1.5;
     color: $stats-text;
 }
 
 .metrics {
-    background-color: $bg1;
+    //background-color: $bg1;
+    background-color: rgba($bg0, 0.5);
     border-radius: 20px;
+    padding: 0 1em 0 1em;
 }
 
 .stats {
-    background-color: $bg1;
+    //background-color: $bg1;
+    background-color: rgba($bg0, 0.5);
     border-radius: 20px;
+    padding: 0 1em 0 1em;
 }
 
 .vol {
-    background-color: $bg1;
+    background-color: rgba($bg0, 0.5);
     border-radius: 20px;
+    padding: 0 1em 0 1em;
 }

@@ -1,5 +1,5 @@
 #!/bin/sh
 
-pamixer -d 2
+pamixer -d 1
 
 $VOLUME_DIR/update_volume.sh
