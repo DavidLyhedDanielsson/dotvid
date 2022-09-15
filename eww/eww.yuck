@@ -1,4 +1,5 @@
-(defvar workspaces "")
+(defvar cores "[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]")
+(defvar workspaces "[]")
 (defvar volume_percent 0)
 (defvar wifi_status "{\"connected\": \"false\", \"name\": \"\"}")
 ;(defvar workspaces "[1]")
@@ -13,7 +14,7 @@
 (defpoll battery :interval "5s" :initial "[\"\", 0, \"\", \"\"]"
   `$BATTERY_DIR/status.sh`
 )
-(defpoll disk :interval "15s"
+(defpoll disk :interval "15s" :initial 0
   `$DISK_DIR/get.sh`
 )
 
@@ -36,12 +37,12 @@
 
 (defwidget core [entry]
   (circular-progress
-    :value {100.0 / 12.0}
+    ; thickness does not update the widget, but using the variable here is
+    ; enough to trigger an update whenever the value changes
+    :value {cores[entry] * 0 + 100.0 / 12.0}
     :start-at {entry * (100.0 / 12.0)}
-    ;:thickness {(EWW_CPU.cores[entry].usage / 100.0) * (EWW_CPU.cores[entry].usage / 100) * 10}
-    :thickness {(EWW_CPU.cores[entry].usage / 100.0) * 8}
-    ;:thickness {entry / 12 * 8}
-    :class {EWW_CPU.cores[entry].usage > 80 ? "corehigh" : "corelow"}
+    :thickness {(cores[entry] / 100.0) * 8}
+    :class {cores[entry] > 80 ? "corehigh" : "corelow"}
     :clockwise true
   )
 )

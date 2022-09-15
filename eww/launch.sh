@@ -9,6 +9,7 @@ export BATTERY_DIR=/home/$USER/.config/eww/scripts/battery
 export WIFI_DIR=/home/$USER/.config/eww/scripts/wifi
 export WORKSPACE_DIR=/home/$USER/.config/eww/scripts/workspace
 export DISK_DIR=/home/$USER/.config/eww/scripts/disk
+export CPU_DIR=/home/$USER/.config/eww/scripts/cpu
 
 kill_all() {
     pid=$(pgrep -f $1)
@@ -22,10 +23,12 @@ kill_all() {
 kill_all "volume.py"
 kill_all "wifi.py"
 kill_all "workspace.py"
+kill_all "cpu.py"
 
 python3 /home/davidwithrice/.config/dotvid/eww/scripts/volume/volume.py &
 python3 /home/davidwithrice/.config/dotvid/eww/scripts/wifi/wifi.py &
 python3 /home/davidwithrice/.config/dotvid/eww/scripts/workspace/workspace.py &
+python3 /home/davidwithrice/.config/dotvid/eww/scripts/cpu/cpu.py &
 
 $HOME/.local/bin/eww daemon
 
