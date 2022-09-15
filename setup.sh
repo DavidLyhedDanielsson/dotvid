@@ -20,7 +20,8 @@ mkdir -p $DOTVID
 # Update first !
 # yay --noconfirm
 
-yay --noconfirm -S git zsh oh-my-zsh-git fzf ack neovim ripgrep htop tree alacritty flameshot clight ttf-iosevka-nerd  pamixer acpi jq
+yay --noconfirm -S git zsh oh-my-zsh-git fzf ack neovim ripgrep htop tree alacritty flameshot clight ttf-iosevka-nerd  pamixer acpi jq discord
+pip install pulsectl psutil
 
 if [ "$using_wayland"=true ]; then
     yay --noconfirm -S eww-wayland-git wl-clipboard swaybg
