@@ -23,7 +23,7 @@ mkdir -p $DOTVID
 yay --noconfirm -S git zsh oh-my-zsh-git fzf ack neovim ripgrep htop tree alacritty flameshot clight ttf-iosevka-nerd  pamixer acpi jq discord
 pip install pulsectl psutil
 
-if [ "$using_wayland"=true ]; then
+if [ "$using_wayland" = true ] ; then
     yay --noconfirm -S eww-wayland-git wl-clipboard swaybg
 else
     yay --noconfirm -S eww 
@@ -40,7 +40,7 @@ safe_create() {
 
 # i3 X11
 ## symlinks
-if [ "$using_wayland"=false ]; then
+if [ "$using_wayland" = false ] ; then
     safe_create ~/.config/i3
     ln -s -f $DOTVID/i3/config ~/.config/i3/config
 fi
@@ -77,7 +77,7 @@ fi
 ln -s -f $DOTVID/eww ~/.config/eww
 
 
-if [ "$using_wayland"=true ]; then
+if [ "$using_wayland" = true ] ; then
     # hypr
     ## symlinks
     if [ -d "~/.config/hypr" ]; then
