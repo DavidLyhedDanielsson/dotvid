@@ -59,6 +59,10 @@ label.core {
     color: $metrics-text;
 }
 
+.disk {
+    color: $metrics-text;
+}
+
 label.ram {
     font-family: "Iosevka Nerd Font";
     font-size: $base-font-size * 1;
@@ -118,6 +122,20 @@ label.volume {
     border: none;
     min-height: 18px;
     background-color: $stats-text;
+}
+
+.workspaces {
+    font-family: "Iosevka Nerd Font";
+    font-size: $base-font-size * 1.5;
+    background-color: rgba($bg0, 0.5);
+    border-radius: 20px;
+    padding: 0 1em 0 1em;
+}
+
+.workspace {}
+
+.workspaceactive {
+    background: $dark-purple;
 }
 
 .wifi {

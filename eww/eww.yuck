@@ -1,3 +1,4 @@
+(defvar workspaces "")
 (defvar volume_percent 0)
 (defvar wifi_status "{\"connected\": \"false\", \"name\": \"\"}")
 ;(defvar workspaces "[1]")
@@ -12,7 +13,9 @@
 (defpoll battery :interval "5s" :initial "[\"\", 0, \"\", \"\"]"
   `$BATTERY_DIR/status.sh`
 )
-;(defvar battery "[\"Not charging\", 0, \"\", \"\"]")
+(defpoll disk :interval "15s"
+  `$DISK_DIR/get.sh`
+)
 
 (defwidget volume []
   (eventbox
@@ -71,9 +74,15 @@
       (label :text "ﳔ" :class "ram" :halign "center")
       (circular-progress
         :value {EWW_RAM.used_mem_perc}
-        :start-at 25
+        :start-at 75
         :class "ram"
         :thickness 3
+      )
+      (circular-progress
+        :value {disk / 100 * 50}
+        :start-at {75 - disk / 100 * 50}
+        :class "ram"
+        :thickness 1
       )
     )
   )
@@ -155,6 +164,21 @@
   )
 )
 
+(defwidget workspaces []
+  (box
+    :space-evenly false
+    :class "workspaces"
+    :spacing 10
+    (for workspace in {workspaces}
+      (label
+        :width 30
+        :class {workspace.active ? "workspaceactive"  : "workspace"}
+        :text {workspace.id}
+      )
+    )
+  )
+)
+
 (defwindow bar
   :monitor 0
   :geometry (geometry
@@ -172,9 +196,11 @@
   ;:reserve (struts :distance "50px" :side "top")
   ;:windowtype "dock"
   ;:wm-ignore false
-  (box
-    :orientation "h"
+  (centerbox
     (box
+    )
+    (box
+      (workspaces)
     )
     (box
       :orientation "h"

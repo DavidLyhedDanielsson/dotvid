@@ -84,3 +84,7 @@ if [ "$using_wayland"=true ]; then
     fi
     ln -s -f $DOTVID/hypr ~/.config/hypr
 fi
+
+# git
+git config --global user.email "davidlyheddanielsson@gmail.com"
+git config --global user.name "David Lyhed Danielsson"
