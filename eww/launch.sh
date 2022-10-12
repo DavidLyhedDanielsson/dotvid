@@ -22,20 +22,21 @@ kill_all() {
 
 kill_all "volume.py"
 kill_all "wifi.py"
-kill_all "workspace.py"
+kill_all "workspace-i3.py"
 kill_all "cpu.py"
 
-python3 /home/davidwithrice/.config/dotvid/eww/scripts/volume/volume.py &
-python3 /home/davidwithrice/.config/dotvid/eww/scripts/wifi/wifi.py &
-python3 /home/davidwithrice/.config/dotvid/eww/scripts/workspace/workspace.py &
-python3 /home/davidwithrice/.config/dotvid/eww/scripts/cpu/cpu.py &
+python3 /home/david/.config/dotvid/eww/scripts/volume/volume.py &
+python3 /home/david/.config/dotvid/eww/scripts/wifi/wifi.py &
+python3 /home/david/.config/dotvid/eww/scripts/cpu/cpu.py &
+python3 /home/david/.config/dotvid/eww/scripts/workspace/workspace-i3.py -d &
 
-$HOME/.local/bin/eww daemon
+#$HOME/.local/bin/eww daemon
+eww daemon
 
 eww update volume_percent=$($VOLUME_DIR/get.sh)
 eww update wifi_status="$($WIFI_DIR/get.sh)"
-python3 /home/davidwithrice/.config/dotvid/eww/scripts/workspace/workspace.py --get
+#python3 /home/david/.config/dotvid/eww/scripts/workspace/workspace-i3.py --get
 
-$HOME/.local/bin/eww open bar
+eww open bar
 
 echo "Ewwbar done"

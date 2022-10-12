@@ -123,6 +123,7 @@
     :orientation "v"
     :space-evenly false
     :valign "center"
+    :style "padding: 0 0.3em 0 0.3em"
     (revealer
       :reveal {battery[0] == "Not charging"}
       :transition "slidedown"
@@ -171,10 +172,17 @@
     :class "workspaces"
     :spacing 10
     (for workspace in {workspaces}
-      (label
-        :width 30
-        :class {workspace.active ? "workspaceactive"  : "workspace"}
-        :text {workspace.id}
+      (box
+        :space-evenly false
+        :class {workspace.active ? "workspace active"  : "workspace"}
+        (label
+          :text {workspace.id}
+          :class "id"
+        )
+        (label
+          :text {workspace.name}
+          :class "name"
+        )
       )
     )
   )
@@ -190,13 +198,13 @@
     :anchor "top center"
   )
   ; Wayland
-  :stacking "fg"
-  :exclusive true
-  ; X11;
   ;:stacking "fg"
-  ;:reserve (struts :distance "50px" :side "top")
-  ;:windowtype "dock"
-  ;:wm-ignore false
+  ;:exclusive true
+  ; X11;
+  :stacking "fg"
+  :reserve (struts :distance "50px" :side "top")
+  :windowtype "dock"
+  :wm-ignore false
   (centerbox
     (box
     )

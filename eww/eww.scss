@@ -36,15 +36,20 @@ $vol-text: $dark-purple;
 
 $base-font-size: 1em;
 
+// Mono is default, "non-mono/poly" is exception
+$font: "Iosevka Nerd Font Mono";
+$font-poly: "Iosevka Nerd Font";
+
 .bar {
     //background: $bg0
     background-color: rgba(0, 0, 0, 0);
 }
 
 label.core {
-    font-family: "Iosevka Nerd Font";
-    font-size: $base-font-size * 1;
+    font-family: $font;
+    font-size: $base-font-size * 2.0;
     color: $metrics-text;
+    padding: 0 0.2em 0 0.2em;
 }
 
 .corelow {
@@ -64,9 +69,10 @@ label.core {
 }
 
 label.ram {
-    font-family: "Iosevka Nerd Font";
-    font-size: $base-font-size * 1;
+    font-family: $font;
+    font-size: $base-font-size * 2.0;
     color: $metrics-text;
+    padding: 0 0.2em 0 0.2em;
 }
 
 .volume {
@@ -74,39 +80,40 @@ label.ram {
 }
 
 label.volume {
-    font-family: "Iosevka Nerd Font";
-    font-size: $base-font-size * 1.2;
+    font-family: $font;
+    font-size: $base-font-size * 2.0;
     color: $vol-text;
+    padding: 0 0.2em 0 0.2em;
 }
 
 .time {
-    font-family: "Iosevka Nerd Font";
+    font-family: $font-poly;
     font-weight: bold;
     font-size: $base-font-size * 1.2;
     color: $fg0;
 }
 
 .date {
-    font-family: "Iosevka Nerd Font";
+    font-family: $font;
     font-weight: bold;
     font-size: $base-font-size * 0.75;
     color: $fg0;
 }
 
 .batteryicon {
-    font-family: "Iosevka Nerd Font";
+    font-family: $font;
     font-size: $base-font-size * 1.2;
     color: $stats-text;
 }
 
 .batteryiconsmall {
-    font-family: "Iosevka Nerd Font";
+    font-family: $font;
     font-size: $base-font-size * 1.0;
     color: $stats-text;
 }
 
 .batterytext {
-    font-family: "Iosevka Nerd Font";
+    font-family: $font;
     font-size: $base-font-size * 1.0;
     color: $stats-text;
 }
@@ -125,23 +132,39 @@ label.volume {
 }
 
 .workspaces {
-    font-family: "Iosevka Nerd Font";
-    font-size: $base-font-size * 1.5;
+    font-family: "Iosevka Nerd Font Mono";
+    font-size: $base-font-size * 1.0;
+    color: $fg4;
     background-color: rgba($bg0, 0.5);
     border-radius: 20px;
     padding: 0 1em 0 1em;
 }
 
-.workspace {}
+.workspace {
+    font-family: "Iosevka Nerd Font Mono";
+    padding: 0 0.1em 0 0.1em;
+}
 
-.workspaceactive {
-    background: $dark-purple;
+.workspace.active {
+    color: $fg0;
+}
+
+.workspace .id {
+    font-weight: 800;
+    font-size: $base-font-size * 1.2;
+}
+
+.workspace .name {
+    font-weight: 800;
+    font-size: $base-font-size * 1.7;
+    letter-spacing: 0.2em;
 }
 
 .wifi {
-    font-family: "Iosevka Nerd Font";
-    font-size: $base-font-size * 1.5;
+    font-family: $font;
+    font-size: $base-font-size * 2.0;
     color: $stats-text;
+    padding: 0 0.2em 0 0.2em;
 }
 
 .metrics {
