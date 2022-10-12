@@ -5,6 +5,7 @@ import argparse
 from curses.ascii import isdigit, isspace
 from dataclasses import dataclass
 from functools import cmp_to_key, reduce
+from locale import currency
 from i3ipc import Connection, Event
 import subprocess
 import json
@@ -161,6 +162,17 @@ def submit_eww_data(data: list[Workspace]):
         ["eww", "update", f"workspaces={json.dumps(eww_data)}"])
 
 
+def get_last_visible_on_output(workspaces: list[Workspace], output: str) -> int:
+    found_visible: bool = False
+    for (i, w) in enumerate(workspaces):
+        found_visible = found_visible or (
+            w.visible and w.output == output)
+        if found_visible and w.output != output:
+            return i - 1
+
+    return len(workspaces) - 1
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-n",
@@ -187,19 +199,12 @@ def main():
 
         workspaces: list[Workspace] = get_all_workspaces(i3)
 
-        last_active_workspace: int = len(workspaces) - 1
-        found_focused: bool = False
-        for (i, w) in enumerate(workspaces):
-            found_focused = found_focused or w.focused
-            if found_focused and w.output != active_monitor:
-                last_active_workspace = i - 1
-                break
-            w.focused = False
+        last_visible = get_last_visible_on_output(workspaces, active_monitor)
 
-        workspaces.insert(last_active_workspace + 1, Workspace(
-            active_monitor, "", workspaces[last_active_workspace].number + 1, [], True, True, []))
+        workspaces.insert(last_visible + 1, Workspace(
+            active_monitor, "", workspaces[last_visible].number + 1, [], True, True, []))
 
-        for i in range(last_active_workspace + 2, len(workspaces)):
+        for i in range(last_visible + 2, len(workspaces)):
             workspaces[i].number += 1
 
         submit_i3_data(i3, workspaces)
@@ -210,21 +215,16 @@ def main():
 
         workspaces: list[Workspace] = get_all_workspaces(i3)
 
-        last_active_workspace: int = len(workspaces) - 1
-        found_focused: bool = False
-        for (i, w) in enumerate(workspaces):
-            found_focused = found_focused or w.focused
-            if found_focused and w.output != active_monitor:
-                last_active_workspace = i - 1
-                break
+        last_visible = get_last_visible_on_output(
+            workspaces, active_monitor)
 
-        for i in range(last_active_workspace + 1, len(workspaces)):
+        for i in range(last_visible + 1, len(workspaces)):
             workspaces[i].number += 1
 
         submit_i3_data(i3, workspaces)
         i3.command(
-            f"move window to workspace {workspaces[last_active_workspace].number + 1}")
-        i3.command(f"workspace {workspaces[last_active_workspace].number + 1}")
+            f"move window to workspace {workspaces[last_visible].number + 1}")
+        i3.command(f"workspace {workspaces[last_visible].number + 1}")
     elif args.d:
         doing_stuff: bool = False
 
