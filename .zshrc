@@ -116,6 +116,8 @@ ZVM_VI_EDITOR=nvim
 alias gits="git status"
 alias gitl="git log"
 alias gitd="git diff"
+alias gitau="git add -u"
+alias gitcan="git commit --amend --no-edit"
 
 alias ll="ls -la"
 
