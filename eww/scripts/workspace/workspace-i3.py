@@ -6,6 +6,7 @@ from curses.ascii import isdigit, isspace
 from dataclasses import dataclass
 from functools import cmp_to_key, reduce
 from locale import currency
+import time
 from i3ipc import Connection, Event
 import subprocess
 import json
@@ -20,22 +21,6 @@ WINDOW_ICONS = {
     'spotify': '',  # could also use the 'spotify' icon
     'zoom': '',
 }
-
-
-def get_workspace_icons(name: str) -> list[str]:
-    return [*name] if ":" not in name else list(filter(lambda x: not isspace(x), [*(name.split(":", 1)[1])]))
-
-
-def get_workspace_number(name: str, default: int = -1) -> int:
-    if ":" not in name:
-        return int(name)
-
-    potential = name.split(":", 1)[0]
-
-    if all(map(lambda x: isdigit(x) or isspace(x), potential)):
-        return int(potential)
-    else:
-        return default
 
 
 class EwwData(TypedDict):
@@ -63,12 +48,26 @@ class Workspace:
     windows: list[Window]
 
 
+def get_workspace_icons(name: str) -> list[str]:
+    return [] if ":" not in name else list(filter(lambda x: not isspace(x), [*(name.split(":", 1)[1])]))
+
+
+def get_workspace_number(name: str, default: int = -1) -> int:
+    if ":" not in name:
+        return int(name)
+
+    potential = name.split(":", 1)[0]
+
+    if all(map(lambda x: isdigit(x) or isspace(x), potential)):
+        return int(potential)
+    else:
+        return default
+
+
 def compare_workspace(lhs: Workspace, rhs: Workspace):
-    # compare numbers?
     if lhs.output.startswith("edp"):
         if lhs.output != rhs.output:
             return -1
-
         return lhs.number - rhs.number
     if rhs.output.startswith("edp"):
         return 1
@@ -84,13 +83,16 @@ def compare_workspace(lhs: Workspace, rhs: Workspace):
 def get_all_workspaces(i3: Connection) -> list[Workspace]:
     data: list[Workspace] = []
 
-    workspace_visibility = {x.name: x.visible for x in i3.get_workspaces()}
+    workspace_visibility: dict[str, bool] = {
+        x.name: x.visible for x in i3.get_workspaces()}  # pyright: ignore
 
     for workspace in i3.get_tree().workspaces():
-        output: str = workspace.ipc_data["output"].lower()
+        output: str = workspace.ipc_data["output"].lower()  # pyright: ignore
         name: str = workspace.name  # pyright: ignore
-        windows: list[Window] = [Window(leaf.window_class.lower(), leaf.focused)  # pyright: ignore
-                                 for leaf in workspace.leaves()]
+        windows: list[Window] = [
+            Window(leaf.window_class.lower(), leaf.focused)  # pyright: ignore
+            for leaf in workspace.leaves()
+        ]
         focused: bool = workspace.focused or reduce(  # pyright: ignore
             lambda v, w: (v or w.focused), windows, False)
         visible: bool = workspace_visibility[name]
@@ -102,7 +104,7 @@ def get_all_workspaces(i3: Connection) -> list[Workspace]:
     return list(sorted(data, key=cmp_to_key(compare_workspace)))
 
 
-def get_active_output(i3: Connection) -> str | None:
+def get_active_output(i3: Connection) -> str:
     for workspace in i3.get_tree().workspaces():
         if workspace.focused:  # type: ignore
             return workspace.ipc_data["output"].lower()  # type: ignore
@@ -111,7 +113,8 @@ def get_active_output(i3: Connection) -> str | None:
             if leaf.focused:  # type: ignore
                 return workspace.ipc_data["output"].lower()  # type: ignore
 
-    return None
+    print("No active output")
+    exit(1)
 
 
 def rename_all(tup: tuple[int, Workspace]) -> Workspace:
@@ -135,10 +138,19 @@ def remove_empty(workspace: Workspace) -> Workspace | None:
 
 
 def submit_i3_data(i3: Connection, workspaces: list[Workspace]):
-    for workspace in reversed(workspaces):
+    # Rename workspaces to `X temp` and then to `X`, otherwise two workspaces
+    # might end up with the same name if 4, 5, 6 needs to be renamed to 5, 6, 7
+    changed: list[int] = []
+
+    for workspace in workspaces:
         if workspace.current_name != str(workspace.number):
             i3.command(
-                f"rename workspace \"{workspace.current_name}\" to \"{workspace.number}\"")
+                f"rename workspace \"{workspace.current_name}\" to \"{workspace.number} temp\"")
+            changed.append(workspace.number)
+
+    for i in changed:
+        i3.command(
+            f"rename workspace \"{i} temp\" to \"{i}\"")
 
     for workspace in workspaces:
         if workspace.current_name == "":
@@ -146,20 +158,12 @@ def submit_i3_data(i3: Connection, workspaces: list[Workspace]):
 
 
 def submit_eww_data(data: list[Workspace]):
-    #     {
-    #         'id': f"{str(counter)}:",
-    #         'name': "".join(icons),
-    #         'active': focused_workspace
-    #     })
-
-    eww_data = list(map(lambda w: {
+    eww_data: list[EwwData] = list(map(lambda w: {
         'id': f"{str(w.number)}:",
         'name': "".join(w.icons),
         'active': w.visible
     }, data))
-
-    subprocess.run(
-        ["eww", "update", f"workspaces={json.dumps(eww_data)}"])
+    subprocess.run(["eww", "update", f"workspaces={json.dumps(eww_data)}"])
 
 
 def get_last_visible_on_output(workspaces: list[Workspace], output: str) -> int:
@@ -186,37 +190,31 @@ def main():
                         help="daemon")
 
     args = parser.parse_args()
-    if not args.d and not args.n and not args.m:
-        #args.d = True
-        args.n = True
-        #args.m = True
+    # For testing purposes
+    # if not args.d and not args.n and not args.m:
+    #     args.d = True
+    #     args.n = True
+    #     args.m = True
 
     i3 = Connection()
     if args.n:
-        active_monitor = get_active_output(i3)
-        if not active_monitor:
-            exit(1)
-
+        active_output = get_active_output(i3)
         workspaces: list[Workspace] = get_all_workspaces(i3)
-
-        last_visible = get_last_visible_on_output(workspaces, active_monitor)
+        last_visible = get_last_visible_on_output(workspaces, active_output)
 
         workspaces.insert(last_visible + 1, Workspace(
-            active_monitor, "", workspaces[last_visible].number + 1, [], True, True, []))
+            active_output, "", workspaces[last_visible].number + 1, [], True, True, []))
 
         for i in range(last_visible + 2, len(workspaces)):
             workspaces[i].number += 1
 
         submit_i3_data(i3, workspaces)
+        # There is no need to submit eww data since the renames will trigger an
+        # event, which triggers `do_rename`
     elif args.m:
-        active_monitor = get_active_output(i3)
-        if not active_monitor:
-            exit(1)
-
+        active_output = get_active_output(i3)
         workspaces: list[Workspace] = get_all_workspaces(i3)
-
-        last_visible = get_last_visible_on_output(
-            workspaces, active_monitor)
+        last_visible = get_last_visible_on_output(workspaces, active_output)
 
         for i in range(last_visible + 1, len(workspaces)):
             workspaces[i].number += 1
@@ -226,31 +224,23 @@ def main():
             f"move window to workspace {workspaces[last_visible].number + 1}")
         i3.command(f"workspace {workspaces[last_visible].number + 1}")
     elif args.d:
-        doing_stuff: bool = False
-
-        # Rename at startup to valid workspace names
         def do_rename():
-            nonlocal doing_stuff
-            if doing_stuff:
-                print("doing_stuff is true")
-                return
-
-            doing_stuff = True
-
+            """Get all workspaces and rename them, then submit the data to eww and i3."""
             data: list[Workspace] = list(
                 map(rename_all, enumerate(get_all_workspaces(i3))))
 
             submit_eww_data(data)
             submit_i3_data(i3, data)
 
-            doing_stuff = False
-
+        # Initial rename
         do_rename()
+
         i3.on(Event.WINDOW_NEW, lambda i3, event: do_rename())
         i3.on(Event.WINDOW_CLOSE, lambda i3, event: do_rename())
         i3.on(Event.WINDOW_MOVE, lambda i3, event: do_rename())
         i3.on(Event.WORKSPACE_FOCUS, lambda i3, event: do_rename())
         i3.on(Event.WORKSPACE_INIT, lambda i3, event: do_rename())
+        i3.on(Event.WORKSPACE_EMPTY, lambda i3, event: do_rename())
         i3.main()
 
 
