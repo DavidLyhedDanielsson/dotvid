@@ -89,3 +89,10 @@ fi
 # git
 git config --global user.email "davidlyheddanielsson@gmail.com"
 git config --global user.name "David Lyhed Danielsson"
+
+if [ "$using_wayland" = false ] ; then
+    # autorandr
+    ## symlinks
+    safe_create ~/.config/autorandr
+    ln -s -f $DOTVID/autorandr/postswitch ~/.config/autorandr/postswitch
+fi

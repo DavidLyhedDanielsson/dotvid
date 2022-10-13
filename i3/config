@@ -22,7 +22,7 @@ font pango:monospace 7
 # Start XDG autostart .desktop files using dex. See also
 # https://wiki.archlinux.org/index.php/XDG_Autostart
 #exec --no-startup-id dex --autostart --environment i3
-#exec --no-startup-id picom -CGb
+exec --no-startup-id picom -b
 #exec --no-startup-id flashfocus
 
 # The combination of xss-lock, nm-applet and pactl is a popular choice, so
@@ -36,13 +36,16 @@ exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
 # and nm-applet is a desktop environment-independent system tray GUI for it.
 #exec --no-startup-id nm-applet
 
-#exec_always --no-startup-id ~/.config/eww/launch.sh
+exec_always --no-startup-id ~/.config/eww/launch.sh
+#exec_always ~/.config/dotvid/polybar/launch.sh
+#exec_always --no-startup-id ~/.local/share/i3scripts/autoname_workspaces.py
 
-exec_always --no-startup-id ~/.config/dotvid/polybar/launch.sh
-exec_always --no-startup-id ~/.local/bin/runxrdb
-exec_always --no-startup-id autorandr --change
-exec_always --no-startup-id ~/.local/share/i3scripts/autoname_workspaces.py
-# exec_always --no-startup-id "killall clight; sleep 1s; clight"
+exec xrandr --output DP-1-2 --off --output DP-1-1 --off && sleep 1 && autorandr --change
+#exec autorandr --change --force
+# Use other path/move runxrdb?
+exec ~/.config/dotvid/bin/runxrdb
+exec --no-startup-id clight
+#exec --no-startup-id feh --bg-fill ~/.config/dotvid/wallpaper.png
 
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
@@ -63,7 +66,7 @@ bindsym Print exec --no-startup-id flameshot gui
 
 gaps inner 8
 for_window [class=".*"] border pixel 0
-smart_gaps on
+#smart_gaps on
 
 #for_window [class="^.*"] border pixel 2
 
@@ -207,7 +210,10 @@ mode "resize" {
 bindsym $mod+r mode "resize"
 
 #bindsym $mod+n exec ~/.local/share/i3scripts/new_workspace.py
-bindsym $mod+Shift+n exec ~/.local/share/i3scripts/new_workspace.py -m
+#bindsym $mod+Shift+n exec ~/.local/share/i3scripts/new_workspace.py -m
+
+bindsym $mod+n exec ~/.config/dotvid/eww/scripts/workspace/workspace-i3.py -n
+bindsym $mod+Control+n exec ~/.config/dotvid/eww/scripts/workspace/workspace-i3.py -m
 
 for_window [class="Vulkan window"] floating enable
 

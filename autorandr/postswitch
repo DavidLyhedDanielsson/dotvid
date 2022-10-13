@@ -1,0 +1,4 @@
+#!/bin/bash
+
+feh --bg-fill ~/.config/dotvid/wallpaper.png
+~/.config/dotvid/polybar/launch.sh

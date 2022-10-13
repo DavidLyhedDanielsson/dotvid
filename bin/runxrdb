@@ -1,0 +1,8 @@
+#!/bin/sh
+
+hdmi=$(xrandr | grep HDMI | awk '{print $2}')
+if [ $hdmi == "disconnected" ]; then
+    xrdb -merge ~/.local/bin/xhidpi
+else
+    xrdb -merge ~/.local/bin/xlodpi
+fi
