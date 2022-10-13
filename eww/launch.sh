@@ -30,12 +30,10 @@ python3 /home/david/.config/dotvid/eww/scripts/wifi/wifi.py &
 python3 /home/david/.config/dotvid/eww/scripts/cpu/cpu.py &
 python3 /home/david/.config/dotvid/eww/scripts/workspace/workspace-i3.py -d &
 
-#$HOME/.local/bin/eww daemon
 eww daemon
 
 eww update volume_percent=$($VOLUME_DIR/get.sh)
 eww update wifi_status="$($WIFI_DIR/get.sh)"
-#python3 /home/david/.config/dotvid/eww/scripts/workspace/workspace-i3.py --get
 
 eww open bar
 
