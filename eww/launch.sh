@@ -35,6 +35,9 @@ eww daemon
 eww update volume_percent=$($VOLUME_DIR/get.sh)
 eww update wifi_status="$($WIFI_DIR/get.sh)"
 
-eww open bar
+monitor_count=$(xrandr --query | grep -w connected | wc -l);
+for i in $(seq 0 $((${monitor_count} - 1))); do
+    eww open bar${i}
+done
 
 echo "Ewwbar done"

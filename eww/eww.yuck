@@ -172,39 +172,27 @@
     :class "workspaces"
     :spacing 10
     (for workspace in {workspaces}
-      (box
-        :space-evenly false
-        :class {workspace.active ? "workspace active"  : "workspace"}
-        (label
-          :text {workspace.id}
-          :class "id"
-        )
-        (label
-          :text {workspace.name}
-          :class "name"
+      (eventbox
+        :onclick "i3-msg workspace number ${workspace.id}"
+        :onscroll "scripts/workspace/{}.sh"
+        (box
+          :space-evenly false
+          :class {workspace.active ? "workspace active"  : "workspace"}
+          (label
+            :text {workspace.id}
+            :class "id"
+          )
+          (label
+            :text {workspace.name}
+            :class "name"
+          )
         )
       )
     )
   )
 )
 
-(defwindow bar
-  :monitor 0
-  :geometry (geometry
-    :x "0%"
-    :y "0px"
-    :width "100%"
-    :height "2%"
-    :anchor "top center"
-  )
-  ; Wayland
-  ;:stacking "fg"
-  ;:exclusive true
-  ; X11;
-  :stacking "fg"
-  :reserve (struts :distance "50px" :side "top")
-  :windowtype "dock"
-  :wm-ignore false
+(defwidget bar []
   (centerbox
     (box
     )
@@ -243,4 +231,65 @@
       )
     )
   )
+)
+
+(defwindow bar0
+  :monitor 0
+  :style "background-color: rgba(0, 0, 0, 0)"
+  :geometry (geometry
+    :x "0%"
+    :y "0px"
+    :width "100%"
+    :height "2%"
+    :anchor "top center"
+  )
+  ; Wayland
+  ;:stacking "fg"
+  ;:exclusive true
+  ; X11;
+  :stacking "fg"
+  :reserve (struts :distance "50px" :side "top")
+  :windowtype "dock"
+  :wm-ignore false
+  (bar)
+)
+
+(defwindow bar1
+  :monitor 1
+  :geometry (geometry
+    :x "0%"
+    :y "0px"
+    :width "100%"
+    :height "2%"
+    :anchor "top center"
+  )
+  ; Wayland
+  ;:stacking "fg"
+  ;:exclusive true
+  ; X11;
+  :stacking "fg"
+  :reserve (struts :distance "50px" :side "top")
+  :windowtype "dock"
+  :wm-ignore false
+  (bar)
+)
+
+(defwindow bar2
+  :monitor 2
+  :geometry (geometry
+    :x "0%"
+    :y "0px"
+    :width "100%"
+    :height "2%"
+    :anchor "top center"
+  )
+  ; Wayland
+  ;:stacking "fg"
+  ;:exclusive true
+  ; X11;
+  :stacking "fg"
+  :reserve (struts :distance "50px" :side "top")
+  :windowtype "dock"
+  :wm-ignore false
+  (bar)
 )
